@@ -1,0 +1,15 @@
+LICENSE.txt
+MANIFEST.in
+README.MD
+setup.py
+SPMUtil/DataSerializer.py
+SPMUtil/__init__.py
+SPMUtil/_flatten.py
+SPMUtil/_formula.py
+SPMUtil/_structures.py
+SPMUtil/converter.py
+SPMUtil.egg-info/PKG-INFO
+SPMUtil.egg-info/SOURCES.txt
+SPMUtil.egg-info/dependency_links.txt
+SPMUtil.egg-info/requires.txt
+SPMUtil.egg-info/top_level.txt

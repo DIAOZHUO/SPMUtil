@@ -1,0 +1,12 @@
+Lesser GNU Public License
+
+
+	Copyright (c) 2021 DIAO ZHUO
+
+	This software is provided under the provisions of the Lesser GNU Public License (LGPL). see: http://www.gnu.org/copyleft/lesser.html.
+
+	This software can be used only for research purposes, you should cite the aforementioned papers in any resulting publication.
+
+	The Software is provided "as is", without warranty of any kind.
+
+
