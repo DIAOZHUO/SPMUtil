@@ -1,3 +1,5 @@
 include *.md
 include SPMUtil/*
+include SPMUtil/analyzer/*
+include SPMUtil/filters/*
 exclude data/*

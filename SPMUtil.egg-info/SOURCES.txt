@@ -2,6 +2,7 @@ LICENSE.txt
 MANIFEST.in
 README.MD
 setup.py
+SPMUtil/.gitattributes
 SPMUtil/DataSerializer.py
 SPMUtil/__init__.py
 SPMUtil/_flatten.py
@@ -13,3 +14,9 @@ SPMUtil.egg-info/SOURCES.txt
 SPMUtil.egg-info/dependency_links.txt
 SPMUtil.egg-info/requires.txt
 SPMUtil.egg-info/top_level.txt
+SPMUtil/analyzer/BaseAnalyzer.py
+SPMUtil/analyzer/DulcineaAnalyzer.py
+SPMUtil/analyzer/GridAnalyzer.py
+SPMUtil/analyzer/NanonisGridVisualizer.py
+SPMUtil/filters/filter_1d.py
+SPMUtil/filters/filter_2d.py

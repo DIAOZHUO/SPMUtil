@@ -7,12 +7,14 @@ import matplotlib.pyplot as plt
 def GaussianMap(data, sigma):
     return gaussian_filter(data, sigma)
 
+
 def GaussianHannMap(data, kernel_size, sigma_x, sigma_y):
     filter = np.zeros(shape=(kernel_size, kernel_size))
     for x in range(0, kernel_size):
         for y in range(0, kernel_size):
             filter[x, y] = np.exp(-(x+1-kernel_size/2)**2/2/sigma_x/sigma_x-(y+1-kernel_size/2)**2/2/sigma_y/sigma_y) * np.sin(np.pi*(y+1)/kernel_size) **2
     return convolve(data, filter)
+
 
 def SmoothMap(data, N):
     I = data.shape[0]

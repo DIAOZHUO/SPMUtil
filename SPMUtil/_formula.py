@@ -53,33 +53,54 @@ def mldivide(A, B):
 
 
 def CalcForceCurveSadar(df_curve, param: measurement_param) -> np.ndarray:
-    dh = param.dh / 10 # nm
-    amp = param.amp / 10 # nm
-    Der = np.zeros(param.data_count)
-    G = np.zeros(param.data_count)
+    """
+    implement the Sader-Jarvis inversion
+
+        References
+    ----------
+    .. [JS] John E. Sader, Takayuki Uchihashi, Michael J. Higgins,
+    Alan Farrell, Yoshikazu Nakayama and Suzanne P. Jarvis
+    "Quantitative force measurements using frequency modulation atomic force
+    microscopy - theoretical foundations"
+    Nanotechnology, 16 S94-S101 (2005)
+    http://www.ampc.ms.unimelb.edu.au/afm/ref_files/Sader_NANO_2005.pdf
+
+    .. [JW] Joachim Welker, Esther Illek, Franz J. Giessibl
+    "Analysis of force-deconvolution methods in frequency-modulation
+    atomic force microscopy"
+    Beilstein J. Nanotechnol. 3, 238 (2012)
+    http://www.beilstein-journals.org/bjnano/content/pdf/2190-4286-3-27.pdf
+    """
+    # get the spacing in z
+    dh = param.dh / 10  # nm
+    amp = param.amp / 10  # nm
     F = np.zeros(param.data_count)
+    z = param.z / 10  # nm
 
-    # der = d df_curve / dh
-    Der[0] = (df_curve[1] - df_curve[0]) / dh
-    Der[param.data_count - 1] = (df_curve[param.data_count - 1] - df_curve[param.data_count - 2]) / dh
-    for i in range(1, param.data_count - 1):
-        Der[i] = ((df_curve[i + 1] - df_curve[i]) / dh + (df_curve[i] - df_curve[i - 1]) / dh) / 2
+    derivative = np.zeros(param.data_count)
+    weights = np.array([1.0 / 12, -2.0 / 3, 0, 2.0 / 3, -1.0 / 12])
 
-    F[0] = 0
-    F[1] = 0
-    for i in range(2, param.data_count):
-        G[i] = 0
-        for m in range(i+1, param.data_count):
+    for i in range(2, param.data_count - 2):
+        derivative[i] = (np.dot(weights, df_curve[i - 2:i + 3]) / dh)
 
-            G[m] = df_curve[m] + df_curve[m] * sqrt(amp) / (8 * sqrt(np.pi * (param.z[m] - param.z[i]) / 10)) \
-                   + Der[m] * amp * sqrt(amp) / sqrt(2 * (param.z[m] - param.z[i]) / 10)
+    for i in range(2, param.data_count - 2):
+        t = z[i + 1:-2]
+        df = df_curve[i + 1:-2]
+        deriv = derivative[i + 1:-2]
+        integrand = ((1 + (amp ** (1.0 / 2)) /
+                      (8 * ((np.pi * (t - z[i])) ** (1 / 2.0)))) * df
+                     - (((amp ** (3.0 / 2)) / (np.sqrt(2 * (t - z[i])))) * deriv))
 
-        F[i] = integral(i, param.data_count - 1, dh, G)
-        F[i] += df_curve[i] * dh + df_curve[i] * 2 * sqrt(amp * dh) / (8 * sqrt(np.pi)) \
-                + Der[i] * 2 * amp * sqrt(amp * dh / 2)
-        F[i] *= -2 * param.k / param.f0 # nN
-        # F[i][j] = integrate.simps(G[:I-i], z[:I-i])
-    return F
+        integral = np.trapz(integrand, t)
+        # add some correction factors after [JS]
+        corr_1 = df_curve[i + 2] * dh
+        corr_2 = (2 * (np.sqrt(amp) / (8 * np.sqrt(np.pi)))
+                  * df_curve[i + 2] * np.sqrt(dh))
+        corr_3 = ((-2) * ((amp ** (3.0 / 2)) / np.sqrt(2))
+                  * derivative[i + 2] * np.sqrt(dh))
+        F[i - 2] = ((2 * param.k) / param.f0) * (
+                integral + corr_1 + corr_2 + corr_3)
+    return F[2:-2]
 
 
 
