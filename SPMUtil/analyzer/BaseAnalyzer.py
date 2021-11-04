@@ -18,7 +18,7 @@ class BaseAnalyzer:
             os.mkdir(self.directory_out)
 
 
-    def SaveFilesToTexture(self, searchAllDirectory=True):
+    def LoadFiles(self, searchAllDirectory=True):
         if not searchAllDirectory:
             if len(self.fileNamesList) == 0:
                 print("Length of File Name List is 0")

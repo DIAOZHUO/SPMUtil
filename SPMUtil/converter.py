@@ -1,16 +1,15 @@
-import ForceSpectroscopyHelper as fsh
 import os
 import numpy as np
 import scipy.interpolate as interpolate
+import SPMUtil as spmu
 import pandas as pd
 from .DataSerializer import DataSerializer
 
 
 class BaseConvertor:
-    def __init__(self, fileName="", data_path=fsh.default_data_path, openFile=True):
+    def __init__(self, fileName="", data_path="", openFile=True):
         self.fileName = fileName
-        self.default_project_path = fsh.default_project_path
-        self.path = os.path.abspath(os.path.join(fsh.default_project_path, data_path, fileName)).replace(os.sep, "/")
+        self.path = os.path.abspath(os.path.join(data_path, fileName)).replace(os.sep, "/")
         if openFile:
             self.file = open(self.path)
         self._pdata = None
@@ -38,11 +37,10 @@ class BaseConvertor:
 
 class GridConvertor(BaseConvertor):
 
-    def __init__(self, fileName="", data_path=fsh.default_data_path):
+    def __init__(self, fileName="", data_path=""):
         BaseConvertor.__init__(self, fileName, data_path)
-        self.analyzer = fsh.analyzer.GridAnalyzer(self.default_project_path + data_path
-                                              , fileNamesList=[fileName])
-        self.analyzer.OpenFile(searchAllDirectory=False)
+        self.analyzer = spmu.analyzer.GridAnalyzer(data_path, fileNamesList=[fileName])
+        self.analyzer.LoadFiles(searchAllDirectory=False)
 
     def get_x_data(self, point=(0,0), offset=None):
         x, y = self.analyzer.get_curve(fileName=self.fileName, point=point)
@@ -84,7 +82,7 @@ class PakConvertor(BaseConvertor):
             self.amp = None
             self.k = None
 
-    def __init__(self, fileName="", data_path=fsh.default_data_path, autoLoad=True):
+    def __init__(self, fileName="", data_path="", autoLoad=True):
         BaseConvertor.__init__(self, fileName, data_path, False)
         self.data = DataSerializer(self.path)
         if autoLoad:

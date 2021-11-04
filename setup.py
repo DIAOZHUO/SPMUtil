@@ -7,7 +7,7 @@ with open(path.join(this_directory, 'README.md'), encoding="utf-8") as f:
 
 setuptools.setup(
     name="SPMUtil",
-    version="0.0.2",
+    version="0.0.3",
     description="Some Common method for SPM data analysis and realtime data processing.",
     author="ZHUO DIAO",
     author_email="enzian0515@gmail.com",
