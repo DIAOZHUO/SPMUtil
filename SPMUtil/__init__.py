@@ -5,5 +5,5 @@ import SPMUtil._structures as structures
 import SPMUtil.converter as converter
 import SPMUtil.analyzer as analyzer
 from SPMUtil.DataSerializer import DataSerializer
-
+from SPMUtil.DataSerializerPackage import DataSerializerPackage
 

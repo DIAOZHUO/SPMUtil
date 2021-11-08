@@ -3,6 +3,7 @@ MANIFEST.in
 README.MD
 setup.py
 SPMUtil/DataSerializer.py
+SPMUtil/DataSerializerPackage.py
 SPMUtil/__init__.py
 SPMUtil/_flatten.py
 SPMUtil/_formula.py

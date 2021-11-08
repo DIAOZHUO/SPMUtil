@@ -2,6 +2,8 @@ import numpy as np
 from itertools import combinations
 from math import sqrt
 from SPMUtil._structures import measurement_param, inflecion_point_param
+from SPMUtil.filters import filter_1d, filter_2d
+
 
 def frequency_shift_to_normalized_frequency_shift(delta_f, param: measurement_param) -> np.ndarray:
     """
@@ -49,6 +51,25 @@ def mldivide(A, B):
                 return sol
             except np.linalg.LinAlgError:
                 raise ValueError("picked bad variables, can't solve")
+
+
+
+
+def CalcForceCurveWithAutoFilter(df_curve, param: measurement_param, s_factor=0.3, diff_factor=-1e-8):
+    x = np.linspace(0, param.max_z, param.data_count)
+    y = df_curve
+    F_y = CalcForceCurveSadar(filter_1d.average_smooth(y, 5), param)
+    F_y_filtered = filter_1d.spline_smooth(x[2:-2], F_y, s=s_factor * (np.max(F_y) - np.min(F_y)), k=3)
+    diff = np.diff(F_y_filtered, 1)
+    c = 0
+    for i in range(0, len(diff) - 1):
+        if diff[i] * diff[i + 1] < 0 and diff[i] * diff[i + 1] < diff_factor:
+            # print(diff[i] * diff[i+1], i)
+            c += 1
+    if c >= 3:
+        return CalcForceCurveWithAutoFilter(df_curve, param, s_factor * 1.5, diff_factor)
+    print("s_factor", s_factor)
+    return x[2:-2], F_y_filtered
 
 
 
