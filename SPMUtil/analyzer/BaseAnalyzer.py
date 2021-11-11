@@ -1,6 +1,8 @@
-from SPMUtil._flatten import *
 import os
+
 import matplotlib.pyplot as plt
+
+from SPMUtil._flatten import *
 
 
 class BaseAnalyzer:

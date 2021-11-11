@@ -6,7 +6,7 @@ SPMUtil/DataSerializer.py
 SPMUtil/DataSerializerPackage.py
 SPMUtil/__init__.py
 SPMUtil/_flatten.py
-SPMUtil/_formula.py
+SPMUtil/_image_process.py
 SPMUtil/_structures.py
 SPMUtil/converter.py
 SPMUtil.egg-info/PKG-INFO
@@ -20,5 +20,14 @@ SPMUtil/analyzer/GridAnalyzer.py
 SPMUtil/analyzer/NanonisGridVisualizer.py
 SPMUtil/analyzer/SxmAnalyzer.py
 SPMUtil/analyzer/__init__.py
+SPMUtil/cython_files/.DS_Store
+SPMUtil/cython_files/cython_calc_NCC.c
+SPMUtil/cython_files/cython_calc_NCC.h
+SPMUtil/cython_files/cython_pyx_code.pyx
+SPMUtil/cython_files/setup.py
 SPMUtil/filters/filter_1d.py
 SPMUtil/filters/filter_2d.py
+SPMUtil/formula/__init__.py
+SPMUtil/formula/_math_formula.py
+SPMUtil/formula/_physic_formula.py
+SPMUtil/formula/_spm_common_formula.py

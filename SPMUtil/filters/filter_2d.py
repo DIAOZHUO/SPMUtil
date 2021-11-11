@@ -1,7 +1,6 @@
-from scipy.ndimage import gaussian_filter
 import numpy as np
 from scipy.fftpack import dct, idct
-import matplotlib.pyplot as plt
+from scipy.ndimage import gaussian_filter
 
 
 def GaussianMap(data, sigma):

@@ -1,9 +1,8 @@
-import os
+import matplotlib.pyplot as plt
+import matplotlib.widgets as widgets
 import numpy as np
 
 from .GridAnalyzer import GridAnalyzer
-import matplotlib.pyplot as plt
-import matplotlib.widgets as widgets
 
 
 class NanonisGridVisualizer(object):

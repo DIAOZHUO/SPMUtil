@@ -1,6 +1,7 @@
-from SPMUtil.analyzer.BaseAnalyzer import *
 import nanonispy as nap
+
 import SPMUtil as spmu
+from SPMUtil.analyzer.BaseAnalyzer import *
 
 
 class GridAnalyzer(BaseAnalyzer):

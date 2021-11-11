@@ -1,7 +1,6 @@
 from enum import Enum
+
 import numpy as np
-
-
 
 
 class FlattenMode(Enum):

@@ -1,19 +1,19 @@
-from SPMUtil.DataSerializer import DataSerializer
 import json
-import os
 import lzma
+import os
 import threading
 
+import SPMUtil as spmu
 
 
 class DataSerializerPackage:
 
-    def __init__(self, path, custom_ext=".xz"):
+    def __init__(self, path, custom_ext=".xzp"):
         self.path = path
         self._ext = custom_ext
         self.dataSerializers = {}
-        self.JsonEncoder = None
-        self.JsonDecoder = None
+        self.JsonEncoder = spmu.NdarrayEncoder
+        self.JsonDecoder = spmu.NdarrayDecoder
         self._is_in_task = False
 
     @property
@@ -21,7 +21,7 @@ class DataSerializerPackage:
         return list(self.dataSerializers.keys())
 
 
-    def get_dataSerializer(self, key) -> DataSerializer:
+    def get_dataSerializer(self, key) -> spmu.DataSerializer:
         if type(key) == bytes:
             key = key.decode()
         if key in self.dataSerializers:
@@ -30,12 +30,12 @@ class DataSerializerPackage:
             raise ValueError("Wrong key: " + key)
 
 
-    def add_data_serializer(self, data_serializer:DataSerializer, overwrite=False, save=False):
+    def add_data_serializer(self, data_serializer:spmu.DataSerializer, overwrite=False, save=False):
         fileName = os.path.basename(data_serializer.path).split('.')[0]
         if fileName in self.dataSerializers:
             if overwrite:
                 self.dataSerializers.pop(fileName)
-                self.dataSerializers[fileName] = fileName
+                self.dataSerializers[fileName] = data_serializer
         else:
             self.dataSerializers[fileName] = data_serializer
 
@@ -43,7 +43,7 @@ class DataSerializerPackage:
             self.save()
 
 
-    def remove_data_serializer(self, data_serializer:DataSerializer, save=False):
+    def remove_data_serializer(self, data_serializer:spmu.DataSerializer, save=False):
         fileName = os.path.basename(data_serializer.path).split('.')[0]
         if fileName in self.dataSerializers:
             self.dataSerializers.pop(fileName)
@@ -68,7 +68,7 @@ class DataSerializerPackage:
         for fileName in files:
             extension = os.path.splitext(fileName)[1]
             if extension == file_ext:
-                dataSerializer = DataSerializer(os.path.join(folder_path, fileName))
+                dataSerializer = spmu.DataSerializer(os.path.join(folder_path, fileName))
                 dataSerializer.load()
                 self.add_data_serializer(dataSerializer)
 
@@ -111,7 +111,7 @@ class DataSerializerPackage:
             print("DataSerializerPacgkage: load begin...")
             datas = json.loads(lzma.decompress(f.read()), cls=self.JsonDecoder)
             for it in datas.keys():
-                dataSerializer = DataSerializer(path=it)
+                dataSerializer = spmu.DataSerializer(path=it)
                 dataSerializer.data_dict = datas[it]
                 self.add_data_serializer(dataSerializer, overwrite=True)
 
