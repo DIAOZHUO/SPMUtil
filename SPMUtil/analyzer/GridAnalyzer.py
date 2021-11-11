@@ -1,6 +1,7 @@
 import nanonispy as nap
 
 import SPMUtil as spmu
+import SPMUtil.formula as formula
 from SPMUtil.analyzer.BaseAnalyzer import *
 
 
@@ -92,7 +93,7 @@ class GridAnalyzer(BaseAnalyzer):
             # return self.fileDict[fileName].signals["topo"]
         return self._topo_cache[fileName]
 
-    def CalcFMap(self, fileName, param:spmu.formula.measurement_param, save_path):
+    def CalcFMap(self, fileName, param:spmu._structures.measurement_param, save_path):
         cvt = spmu.converter.PakConvertor(fileName, save_path, False)
 
         xy = self.get_xy_count(fileName)
@@ -104,7 +105,7 @@ class GridAnalyzer(BaseAnalyzer):
                 x, y = self.get_curve(point=(i, j), fileName=fileName)
                 x = np.flipud(x)
                 y = np.flipud(y)
-                f = spmu.formula.CalcForceCurveSadar(y, param)
+                f = formula.CalcForceCurveSadar(y, param)
                 cvt.add_data((i,j), spmu.structures.force_curve(x=x, y=f))
 
                 print("finished", (i, j), "/", xy)

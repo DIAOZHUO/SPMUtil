@@ -1,6 +1,5 @@
 import numpy as np
-
-import SPMUtil.formula as formula
+import SPMUtil
 from SPMUtil._structures import measurement_param, inflecion_point_param
 from SPMUtil.filters import filter_1d
 
@@ -98,7 +97,7 @@ def CalcForceCurveMatrix(df_curve, param: measurement_param) -> np.ndarray:
                           * 2 / (2 * alpha + 1) * \
                           (np.sqrt((2 * alpha + 1) * (i - j + 1) - (i - j + 1) ** 2) - np.sqrt(
                               (2 * alpha + 1) * (i - j) - (i - j) ** 2))
-    F = formula.math.mldivide(W, df_curve)
+    F = SPMUtil.formula.mldivide(W, df_curve)
     return np.flipud(F)
 
 
