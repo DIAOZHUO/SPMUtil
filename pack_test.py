@@ -6,8 +6,6 @@ import json
 import numpy as np
 
 pack = DataSerializerPackage(path="./tio2_20211025")
-pack.JsonEncoder = NdarrayEncoder
-pack.JsonDecoder = NdarrayDecoder
 
 
 # save test
@@ -18,7 +16,7 @@ pack.JsonDecoder = NdarrayDecoder
 # load test
 pack.load()
 print(pack.datas_name_list)
-key = 'tio2_20211025_5'
+key = 'tio2_20211025_1'
 
 data = pack.get_dataSerializer(key=key)
 topo_map = spmu.flatten_map(data.data_dict['FWFW_ZMap'], spmu.FlattenMode.LinearFit)
@@ -34,8 +32,11 @@ def time_string_to_sec(time_str: str):
 
 print(json.loads(data.data_dict['data_main_header'])["Time_Start_Scan"])
 print(time_string_to_sec(json.loads(data.data_dict['data_main_header'])["Time_Start_Scan"]))
+map = spmu.formula.topo_map_correction(topo_map, threshold=5)
+# plt.imshow(map, cmap="afmhot")
+# plt.title(key)
+# plt.colorbar()
+# plt.show()
 
-plt.imshow(spmu.formula.topo_map_correction(topo_map, threshold=5), cmap="afmhot")
-plt.title(key)
-plt.colorbar()
+plt.imshow(spmu.Rect2DSelector().select_rect(map).extract_2d_map_from_rect(map))
 plt.show()

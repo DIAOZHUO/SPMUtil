@@ -1,4 +1,45 @@
 import numpy as np
+from matplotlib.patches import Rectangle
+
+
+class Rect2D:
+
+    def __init__(self, points=(0,0), xbox=1, ybox=1):
+        if points[0] < 0:
+            points[0] = 0
+        if points[1] < 0:
+            points[1] = 0
+        if xbox < 1:
+            xbox = 1
+        if ybox < 1:
+            ybox = 1
+        self.points = (int(points[0]), int(points[1]))
+        self.xbox = int(xbox)
+        self.ybox = int(ybox)
+
+
+    def extract_2d_map_from_rect(self, map: np.ndarray):
+        x_point, y_point = self.points[0], self.points[1]
+        return map[y_point:y_point+self.ybox, x_point:x_point+self.xbox]
+
+    def draw_rect_patch_on_matplot(self, ax):
+        _rect = Rectangle(self.points, self.xbox, self.ybox, linewidth=1, edgecolor="r", facecolor="none")
+        ax.add_patch(_rect)
+
+    @staticmethod
+    def get_random_rect(data: np.ndarray, x_box_min, x_box_max, y_box_min, y_box_max, fixed_center=None):
+        if len(data.shape) != 2:
+            raise ValueError("Wrong Data Shape")
+        size = (np.random.uniform(low=x_box_min, high=x_box_max, size=1),
+                np.random.uniform(low=y_box_min, high=y_box_max, size=1))
+        if fixed_center is None:
+            points = np.random.uniform(low=0, high=data.shape[0]-size[0]), np.random.uniform(low=0, high=data.shape[1]-size[1])
+        else:
+            points = fixed_center[0] - size[0]/2, fixed_center[1] - size[1]/2
+
+        return Rect2D(points, size[0], size[1])
+
+
 
 
 

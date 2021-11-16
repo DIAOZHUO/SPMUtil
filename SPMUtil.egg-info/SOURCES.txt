@@ -17,7 +17,6 @@ SPMUtil.egg-info/top_level.txt
 SPMUtil/analyzer/BaseAnalyzer.py
 SPMUtil/analyzer/DulcineaAnalyzer.py
 SPMUtil/analyzer/GridAnalyzer.py
-SPMUtil/analyzer/NanonisGridVisualizer.py
 SPMUtil/analyzer/SxmAnalyzer.py
 SPMUtil/analyzer/__init__.py
 SPMUtil/cython_files/.DS_Store
@@ -31,3 +30,6 @@ SPMUtil/formula/__init__.py
 SPMUtil/formula/_math_formula.py
 SPMUtil/formula/_physic_formula.py
 SPMUtil/formula/_spm_common_formula.py
+SPMUtil/gui/NanonisGridVisualizer.py
+SPMUtil/gui/__init__.py
+SPMUtil/gui/rect_2d_selector.py
