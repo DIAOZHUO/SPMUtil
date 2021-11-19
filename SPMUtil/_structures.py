@@ -4,11 +4,14 @@ from matplotlib.patches import Rectangle
 
 class Rect2D:
 
+    def __str__(self):
+        return "left_bottom:" + str(self.points) + ", window_size: (" + str(self.xbox) + ", " + str(self.ybox) + ")"
+
     def __init__(self, points=(0,0), xbox=1, ybox=1):
-        if points[0] < 0:
-            points[0] = 0
-        if points[1] < 0:
-            points[1] = 0
+        # if points[0] < 0:
+        #     points[0] = 0
+        # if points[1] < 0:
+        #     points[1] = 0
         if xbox < 1:
             xbox = 1
         if ybox < 1:

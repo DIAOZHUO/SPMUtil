@@ -1,6 +1,8 @@
 SPMUtil (spmu)
 ===================================
 Some Common method for SPM data analysis and realtime data processing.
+<br>
+Python version 3.* required.
 
 Features
 -------
