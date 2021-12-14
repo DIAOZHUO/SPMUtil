@@ -1,3 +1,5 @@
+import time
+
 import SPMUtil as spmu
 from SPMUtil.DataSerializerPackage import DataSerializerPackage
 from SPMUtil import NdarrayDecoder, NdarrayEncoder
@@ -16,22 +18,30 @@ pack = DataSerializerPackage(path="./tio2_20211025")
 # load test
 pack.load()
 print(pack.datas_name_list)
-key = 'tio2_20211025_1'
+key = 'tio2_20211025_1-new'
 
 data = pack.get_dataSerializer(key=key)
-topo_map = spmu.flatten_map(data.data_dict['FWFW_ZMap'], spmu.FlattenMode.LinearFit)
-param = json.loads(data.data_dict['Stage Param'], cls=NdarrayDecoder)
-current_error_map = data.data_dict['FWFW_CurrentMap']-param["setpoint"]
-# print(json.loads(data.data_dict['data_main_header'])["Time_Start_Scan"])
+
+# extract data serializer pack to data serializer
+# pack.extract_to_folder("./")
 
 
 
-def time_string_to_sec(time_str: str):
-    ftr = [3600, 60, 1]
-    return sum([a * b for a, b in zip(ftr, map(int, time_str.split(':')))])
 
-print(json.loads(data.data_dict['data_main_header'])["Time_Start_Scan"])
-print(time_string_to_sec(json.loads(data.data_dict['data_main_header'])["Time_Start_Scan"]))
+config = spmu.StageConfigure.from_dataSerilizer(data)
+header = spmu.ScanDataHeader.from_dataSerilizer(data)
+param = spmu.PythonScanParam.from_dataSerilizer(data)
+print(config, header, param)
+
+topo_map = data.data_dict[spmu.cache_2d_scope.FWFW_ZMap.name]
+plt.imshow(topo_map)
+plt.show()
+
+#
+# t = time.time()
+# map = spmu.flatten_map(data.data_dict['FWFW_ZMap'])
+# t1 = time.time()
+# print("dt:", t1-t)
 
 # map = spmu.filter_2d.GaussianHannMap(topo_map, kernel_size=5, sigma_x=3, sigma_y=3)
 # print(map.shape)

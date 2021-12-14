@@ -1,6 +1,6 @@
 import numpy as np
 import SPMUtil
-from SPMUtil._structures import measurement_param, inflecion_point_param
+from SPMUtil.structures._structures import measurement_param, inflecion_point_param
 from SPMUtil.filters import filter_1d
 
 

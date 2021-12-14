@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from matplotlib.widgets import RectangleSelector
-from SPMUtil._structures import Rect2D
+from SPMUtil.structures.rect_2d import Rect2D
+
 
 class Rect2DSelector(object):
     def __init__(self, ax=None):

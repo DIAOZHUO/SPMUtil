@@ -1,7 +1,7 @@
 import scipy.interpolate as interpolate
 from scipy.signal._savitzky_golay import savgol_filter
 
-from SPMUtil._structures import *
+from SPMUtil.structures._structures import *
 
 
 def spline_smooth(x, y, s=1.0, k=3):

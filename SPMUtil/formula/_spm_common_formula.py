@@ -43,3 +43,32 @@ def calc_ncc(template, image, use_cython=False):
                      axis=(0, 3, 4))
     return ncc
 
+
+
+def calc_SAD(template, image, use_cython=False):
+    if use_cython:
+        raise NotImplementedError()
+    else:
+        c, h_f, w_f = template.shape[-3:]
+        tmp = np.zeros((c, image.shape[-2] - h_f, image.shape[-1] - w_f, h_f, w_f))
+        for i in range(image.shape[-2] - h_f):
+            for j in range(image.shape[-1] - w_f):
+                M_tilde = image[:, :, i:i + h_f, j:j + w_f][:, None, None, :, :]
+                tmp[:, i, j, :, :] = M_tilde
+        SAD = np.sum(np.abs(tmp - template.reshape(c, 1, 1, h_f, w_f)), axis=(0, 3, 4))
+        return np.max(SAD) - SAD
+
+
+def calc_SSD(template, image, use_cython=False):
+    if use_cython:
+        raise NotImplementedError()
+    else:
+        c, h_f, w_f = template.shape[-3:]
+        tmp = np.zeros((c, image.shape[-2] - h_f, image.shape[-1] - w_f, h_f, w_f))
+        for i in range(image.shape[-2] - h_f):
+            for j in range(image.shape[-1] - w_f):
+                M_tilde = image[:, :, i:i + h_f, j:j + w_f][:, None, None, :, :]
+                tmp[:, i, j, :, :] = M_tilde
+        SSD = np.sum(np.square(tmp - template.reshape(c, 1, 1, h_f, w_f)), axis=(0, 3, 4))
+        return np.max(SSD) - SSD
+

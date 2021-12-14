@@ -93,7 +93,7 @@ class GridAnalyzer(BaseAnalyzer):
             # return self.fileDict[fileName].signals["topo"]
         return self._topo_cache[fileName]
 
-    def CalcFMap(self, fileName, param:spmu._structures.measurement_param, save_path):
+    def CalcFMap(self, fileName, param: spmu.structures.measurement_param, save_path):
         cvt = spmu.converter.PakConvertor(fileName, save_path, False)
 
         xy = self.get_xy_count(fileName)

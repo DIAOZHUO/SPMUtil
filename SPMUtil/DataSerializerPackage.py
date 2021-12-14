@@ -74,6 +74,11 @@ class DataSerializerPackage:
 
         self.save(enable_multi_thread)
 
+    def extract_to_folder(self, folder_path):
+        for key in self.dataSerializers.keys():
+            self.dataSerializers[key].path = os.path.join(folder_path, self.dataSerializers[key].path)
+            self.dataSerializers[key].save()
+
 
     def load(self, enable_multi_thread=False):
         if self._is_in_task:
