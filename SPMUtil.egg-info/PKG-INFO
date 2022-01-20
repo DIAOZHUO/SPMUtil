@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: SPMUtil
-Version: 0.1.5
+Version: 0.2.0
 Summary: Some Common method for SPM data analysis and realtime data processing.
 Home-page: UNKNOWN
 Author: ZHUO DIAO
@@ -44,6 +44,20 @@ this package runs in the environment of python 3.6:
 
 * `pip install SPMUtil`
 
+##### (optional) Cython support
+
+To get better performance in realtime meansurement, 
+please consider compiling cython script in "SPMUtil/cython_files".
+Just go to this path, then
+
+* `python cython_setup.py build_ext --inplace`
+
+To enable cython script, type this at beginning.
+
+```python
+import SPMUtil as spmu
+spmu.use_cython = True
+```
 
 
 

@@ -1,6 +1,6 @@
 import numpy as np
 from scipy import interpolate
-
+import SPMUtil
 
 
 def line_proline(map, xy_point_from, xy_point_to):
@@ -21,17 +21,18 @@ def topo_map_correction(topo_map: np.ndarray, threshold=3):
     return interpolate.griddata((x1, y1), array[~array.mask].ravel(), (xx, yy), method="cubic")
 
 
-def calc_ncc(template, image, use_cython=False):
-    if use_cython:
-        import SPMUtil.cython_files.cython_calc_NCC as cython_calc_NCC
+
+
+def calc_ncc_dim3(template, image):
+    if SPMUtil.use_cython:
+        from SPMUtil.cython_files import cython_tm_code
         F = template.numpy()[0].astype(np.float32)
         M = image.numpy()[0].astype(np.float32)
         ncc = np.zeros(
             (M.shape[1] - F.shape[1]) * (M.shape[2] - F.shape[2])).astype(np.float32)
-        cython_calc_NCC.c_calc_NCC(M.flatten().astype(np.float32), np.array(M.shape).astype(
+        cython_tm_code.c_calc_NCC_dim3(M.flatten().astype(np.float32), np.array(M.shape).astype(
             np.int32), F.flatten().astype(np.float32), np.array(F.shape).astype(np.int32), ncc)
         ncc = ncc.reshape([M.shape[1] - F.shape[1], M.shape[2] - F.shape[2]])
-
     else:
         c, h_f, w_f = template.shape[-3:]
         tmp = np.zeros((c, image.shape[-2] - h_f, image.shape[-1] - w_f, h_f, w_f))
@@ -45,9 +46,16 @@ def calc_ncc(template, image, use_cython=False):
 
 
 
-def calc_SAD(template, image, use_cython=False):
-    if use_cython:
-        raise NotImplementedError()
+def calc_SAD_dim3(template, image):
+    if SPMUtil.use_cython:
+        from SPMUtil.cython_files import cython_tm_code
+        F = template.numpy()[0].astype(np.float32)
+        M = image.numpy()[0].astype(np.float32)
+        SAD = np.zeros(
+            (M.shape[1] - F.shape[1]) * (M.shape[2] - F.shape[2])).astype(np.float32)
+        cython_tm_code.c_calc_SAD_dim3(M.flatten().astype(np.float32), np.array(M.shape).astype(
+            np.int32), F.flatten().astype(np.float32), np.array(F.shape).astype(np.int32), SAD)
+        SAD = SAD.reshape([M.shape[1] - F.shape[1], M.shape[2] - F.shape[2]])
     else:
         c, h_f, w_f = template.shape[-3:]
         tmp = np.zeros((c, image.shape[-2] - h_f, image.shape[-1] - w_f, h_f, w_f))
@@ -56,12 +64,20 @@ def calc_SAD(template, image, use_cython=False):
                 M_tilde = image[:, :, i:i + h_f, j:j + w_f][:, None, None, :, :]
                 tmp[:, i, j, :, :] = M_tilde
         SAD = np.sum(np.abs(tmp - template.reshape(c, 1, 1, h_f, w_f)), axis=(0, 3, 4))
-        return np.max(SAD) - SAD
+    return np.max(SAD) - SAD
 
 
-def calc_SSD(template, image, use_cython=False):
-    if use_cython:
-        raise NotImplementedError()
+
+def calc_SSD_dim3(template, image, use_cython=False):
+    if SPMUtil.use_cython:
+        from SPMUtil.cython_files import cython_tm_code
+        F = template.numpy()[0].astype(np.float32)
+        M = image.numpy()[0].astype(np.float32)
+        SSD = np.zeros(
+            (M.shape[1] - F.shape[1]) * (M.shape[2] - F.shape[2])).astype(np.float32)
+        cython_tm_code.c_calc_SSD_dim3(M.flatten().astype(np.float32), np.array(M.shape).astype(
+            np.int32), F.flatten().astype(np.float32), np.array(F.shape).astype(np.int32), SSD)
+        SSD = SSD.reshape([M.shape[1] - F.shape[1], M.shape[2] - F.shape[2]])
     else:
         c, h_f, w_f = template.shape[-3:]
         tmp = np.zeros((c, image.shape[-2] - h_f, image.shape[-1] - w_f, h_f, w_f))
@@ -70,5 +86,5 @@ def calc_SSD(template, image, use_cython=False):
                 M_tilde = image[:, :, i:i + h_f, j:j + w_f][:, None, None, :, :]
                 tmp[:, i, j, :, :] = M_tilde
         SSD = np.sum(np.square(tmp - template.reshape(c, 1, 1, h_f, w_f)), axis=(0, 3, 4))
-        return np.max(SSD) - SSD
+    return np.max(SSD) - SSD
 

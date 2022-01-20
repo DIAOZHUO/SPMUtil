@@ -34,6 +34,18 @@ class Rect2D:
     def __roll(self, percent=0.5):
         return percent > np.random.rand()
 
+    def squared_rect(self, bound_x_min=0, bound_x_max=-1, bound_y_min=0, bound_y_max=-1):
+        box = max(self.xbox, self.ybox)
+        center = np.copy(self.center)
+        # print(center, box)
+        if center[0] - box / 2 < bound_x_min:
+            box = (center[0] - bound_x_min) * 2
+        if center[1] - box / 2 < bound_y_min:
+            box = (center[1] - bound_y_min) * 2
+        self.xbox = box
+        self.ybox = box
+        self.points = int(center[0] - self.xbox / 2), int(center[1] - self.ybox / 2)
+
 
     @property
     def center(self):

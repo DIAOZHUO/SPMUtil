@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.fftpack import dct, idct
 from scipy.ndimage import gaussian_filter
+import SPMUtil
 
 
 def GaussianMap(data, sigma):
@@ -13,7 +14,12 @@ def GaussianHannMap(data, kernel_size, sigma_x, sigma_y):
     for x in range(0, kernel_size):
         for y in range(0, kernel_size):
             filter[x, y] = np.exp(-(x+1-kernel_size/2)**2/2/sigma_x/sigma_x-(y+1-kernel_size/2)**2/2/sigma_y/sigma_y) * np.sin(np.pi*(y+1)/kernel_size) **2
-    return convolve(data, filter).reshape((size[0]-kernel_size+3, size[1]-kernel_size+3))
+    if SPMUtil.use_cython:
+        from SPMUtil.cython_files import cython_code
+        rim = kernel_size // 2 + 3
+        return cython_code.convolve2d_tuned(data, filter)[rim:-rim, rim:-rim]
+    else:
+        return convolve(data, filter).reshape((size[0]-kernel_size+3, size[1]-kernel_size+3))
 
 
 def SmoothMap(data, N):

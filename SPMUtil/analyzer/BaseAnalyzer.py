@@ -2,7 +2,7 @@ import os
 
 import matplotlib.pyplot as plt
 
-from SPMUtil._flatten import *
+from SPMUtil.flatten import *
 
 
 class BaseAnalyzer:

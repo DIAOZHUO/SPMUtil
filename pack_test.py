@@ -37,11 +37,36 @@ topo_map = data.data_dict[spmu.cache_2d_scope.FWFW_ZMap.name]
 plt.imshow(topo_map)
 plt.show()
 
-#
-# t = time.time()
-# map = spmu.flatten_map(data.data_dict['FWFW_ZMap'])
-# t1 = time.time()
-# print("dt:", t1-t)
+
+
+
+spmu.use_cython = False
+t = time.time()
+for i in range(3):
+    # flatten_c.get_flatten_param_poly(topo_map, poly_fit_order=3)
+    # sample.get_flatten_param_linear(topo_map)
+    map1 = spmu.filter_2d.GaussianHannMap(topo_map, 15, 1, 1)
+t1 = time.time()
+print("dt:", t1-t)
+print(map1.shape)
+plt.imshow(map1)
+plt.show()
+
+spmu.use_cython = True
+t = time.time()
+for i in range(3):
+    map1 = spmu.filter_2d.GaussianHannMap(topo_map, 15, 1, 1)
+    # spmu.get_flatten_param(topo_map, spmu.FlattenMode.PolyFit, poly_fit_order=3)
+    # spmu.get_flatten_param(topo_map, spmu.FlattenMode.LinearFit, poly_fit_order=3)
+
+    # print(111)
+t1 = time.time()
+print("dt:", t1-t)
+print(map1.shape)
+plt.imshow(map1)
+plt.show()
+
+
 
 # map = spmu.filter_2d.GaussianHannMap(topo_map, kernel_size=5, sigma_x=3, sigma_y=3)
 # print(map.shape)

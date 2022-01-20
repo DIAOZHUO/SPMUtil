@@ -1,6 +1,7 @@
 from SPMUtil import NdarrayEncoder, NdarrayDecoder, DataSerializer
 import json
 from enum import Enum
+from datetime import datetime as dt
 
 
 class cache_1d_scope(Enum):
@@ -105,6 +106,9 @@ class PythonScanParam(JsonStringClass):
         self.Applytilt = False
         self.Aux1Type = 1
         self.Aux2Type = 2
+        self.LinesNumPerFlag = 1
+        self.ZFeedbackOn = True
+
 
     @property
     def Aux1DeltaVoltage(self):
@@ -140,6 +144,16 @@ class ScanDataHeader(JsonStringClass):
     @property
     def End_Scan_Sec(self) -> int:
         return self._time_string_to_sec(self.Time_End_Scan)
+
+    @property
+    def Start_Scan_Timestamp(self) -> float:
+        tdatetime = dt.strptime(self.Date + " " + self.Time_Start_Scan, '%Y-%m-%d %H:%M:%S')
+        return tdatetime.timestamp()
+
+    @property
+    def End_Scan_Timestamp(self) -> float:
+        tdatetime = dt.strptime(self.Date + " " + self.Time_End_Scan, '%Y-%m-%d %H:%M:%S')
+        return tdatetime.timestamp()
 
     @staticmethod
     def GetKeyName() -> str:

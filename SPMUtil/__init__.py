@@ -10,7 +10,12 @@ from SPMUtil.structures.rect_2d import Rect2D
 from SPMUtil.structures.scan_data_format import cache_1d_scope, cache_2d_scope, ScanDataHeader, StageConfigure, PythonScanParam
 
 
-from SPMUtil._flatten import *
+from SPMUtil.flatten import *
 from SPMUtil.filters import filter_1d, filter_2d
 
 from SPMUtil.gui import Rect2DSelector, NanonisGridVisualizer
+
+
+use_cython = False
+
+
