@@ -31,15 +31,14 @@ data = pack.get_dataSerializer(key=key)
 config = spmu.StageConfigure.from_dataSerilizer(data)
 header = spmu.ScanDataHeader.from_dataSerilizer(data)
 param = spmu.PythonScanParam.from_dataSerilizer(data)
-print(config, header, param)
 
-topo_map = data.data_dict[spmu.cache_2d_scope.FWFW_ZMap.name]
-plt.imshow(topo_map)
-plt.show()
-
+# topo_map = data.data_dict[spmu.cache_2d_scope.FWFW_ZMap.name]
+# plt.imshow(topo_map)
+# plt.show()
 
 
 
+"""
 spmu.use_cython = False
 t = time.time()
 for i in range(3):
@@ -65,7 +64,7 @@ print("dt:", t1-t)
 print(map1.shape)
 plt.imshow(map1)
 plt.show()
-
+"""
 
 
 # map = spmu.filter_2d.GaussianHannMap(topo_map, kernel_size=5, sigma_x=3, sigma_y=3)

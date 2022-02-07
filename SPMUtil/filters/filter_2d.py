@@ -17,7 +17,7 @@ def GaussianHannMap(data, kernel_size, sigma_x, sigma_y):
     if SPMUtil.use_cython:
         from SPMUtil.cython_files import cython_code
         rim = kernel_size // 2 + 3
-        return cython_code.convolve2d_tuned(data, filter)[rim:-rim, rim:-rim]
+        return cython_code.convolve2d_tuned(data, filter, rim)
     else:
         return convolve(data, filter).reshape((size[0]-kernel_size+3, size[1]-kernel_size+3))
 

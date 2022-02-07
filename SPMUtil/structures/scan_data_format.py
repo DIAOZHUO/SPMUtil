@@ -67,13 +67,17 @@ class StageConfigure(JsonStringClass):
         self.High_Speed_Scanner_Offset_X = 0
         self.High_Speed_Scanner_Offset_Y = 0
         self.Scan_Speed = 1000
-        self.XY_Scan_Option = ""
-        self.Z_Scan_Option = ""
+        # 0: tube scanner, 1: hs scanner, 2: disabled
+        self.XY_Scan_Option = 0
+        self.Z_Scan_Option = 0
         self.setpoint = 0.01
         # labviewにはこれらの変数はないけど, ここはファイル保存のために使う
         self.drift_x = 0.0
         self.drift_y = 0.0
         self.drift_z = 0.0
+        self.z_sum_offset = 0.0
+        self.sys_x_tilt = 0.0
+        self.sys_y_tilt = 0.0
 
     @staticmethod
     def GetKeyName() -> str:

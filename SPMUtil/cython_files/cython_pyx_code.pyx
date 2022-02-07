@@ -8,7 +8,7 @@ ctypedef np.float64_t DTYPE_t
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def convolve2d(np.ndarray[double, ndim=2] f, np.ndarray[double, ndim=2] g):
+def convolve2d(np.ndarray[double, ndim=2] f, np.ndarray[double, ndim=2] g, int rim):
     cdef:
         ssize_t vmax, wmax, smax, tmax, smid, tmid, xmax, ymax
         ssize_t s_from, s_to, t_from, t_to
@@ -36,10 +36,10 @@ def convolve2d(np.ndarray[double, ndim=2] f, np.ndarray[double, ndim=2] g):
     xmax = vmax + 2 * smid
     ymax = wmax + 2 * tmid
     # Allocate result image.
-    h = np.zeros([xmax, ymax], dtype=f.dtype)
+    h = np.zeros([xmax-rim*2, ymax-rim*2], dtype=f.dtype)
     # Do convolution
-    for x in range(xmax):
-        for y in range(ymax):
+    for x in range(rim, xmax-rim):
+        for y in range(rim, ymax-rim):
             # Calculate pixel value for h at (x,y). Sum one component
             # for each pixel (s, t) of the filter g.
             s_from = max(smid - x, -smid)
@@ -52,13 +52,13 @@ def convolve2d(np.ndarray[double, ndim=2] f, np.ndarray[double, ndim=2] g):
                     v = x - smid + s
                     w = y - tmid + t
                     value += g[smid - s, tmid - t] * f[v, w]
-            h[x, y] = value
+            h[x-rim, y-rim] = value
     return h
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def convolve2d_tuned(np.ndarray[double, ndim=2, mode='c'] f, np.ndarray[double, ndim=2, mode='c'] g):
+def convolve2d_tuned(np.ndarray[double, ndim=2, mode='c'] f, np.ndarray[double, ndim=2, mode='c'] g, int rim):
     cdef:
         ssize_t vmax, wmax, smax, tmax, smid, tmid, xmax, ymax
         ssize_t s_from, s_to, t_from, t_to
@@ -86,11 +86,11 @@ def convolve2d_tuned(np.ndarray[double, ndim=2, mode='c'] f, np.ndarray[double, 
     xmax = vmax + 2*smid
     ymax = wmax + 2*tmid
     # Allocate result image.
-    h = np.zeros([xmax, ymax], dtype=f.dtype)
+    h = np.zeros([xmax-rim*2, ymax-rim*2], dtype=f.dtype)
     # Do convolution
     with nogil:
-        for x in prange(xmax, schedule='static'):
-            for y in range(ymax):
+        for x in prange(rim, xmax-rim, schedule='static'):
+            for y in range(rim, ymax-rim):
                 # Calculate pixel value for h at (x,y). Sum one component
                 # for each pixel (s, t) of the filter g.
                 s_from = max(smid - x, -smid)
@@ -103,7 +103,7 @@ def convolve2d_tuned(np.ndarray[double, ndim=2, mode='c'] f, np.ndarray[double, 
                         v = x - smid + s
                         w = y - tmid + t
                         value = value + g[smid - s, tmid - t] * f[v, w]
-                h[x, y] = value
+                h[x-rim, y-rim] = value
     return h
 
 
@@ -118,6 +118,23 @@ cpdef inline np.ndarray[DTYPE_t, ndim=2] flatten_map_average_c(np.ndarray[DTYPE_
     row_ave = np.nanmean(map2d, axis=1, dtype=map2d.dtype)
     map2d -= np.tile(col_ave, (size1, 1)) + np.tile(np.array([row_ave]).transpose(), (1, size2), dtype=map2d.dtype)
     return map2d
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cpdef inline np.ndarray[DTYPE_t, ndim=2] \
+        rotate_array(np.ndarray[DTYPE_t, ndim=1] array_x, np.ndarray[DTYPE_t, ndim=1] array_y, np.ndarray[DTYPE_t, ndim=1] rot_mat):
+    cdef int size = len(array_x)
+    cdef np.ndarray[DTYPE_t, ndim=1] ax = np.empty(size)
+    cdef np.ndarray[DTYPE_t, ndim=1] ay = np.empty(size)
+    for i in range(0, size):
+        ax[i] = rot_mat[0] * array_x[i] + rot_mat[1] * array_y[i] + rot_mat[2]
+        ay[i] = rot_mat[3] * array_x[i] + rot_mat[4] * array_y[i] + rot_mat[5]
+    return np.vstack([ax, ay])
+
+
+
+
 
 
 

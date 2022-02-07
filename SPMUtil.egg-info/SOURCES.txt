@@ -37,7 +37,9 @@ SPMUtil/formula/_spm_common_formula.py
 SPMUtil/gui/NanonisGridVisualizer.py
 SPMUtil/gui/__init__.py
 SPMUtil/gui/rect_2d_selector.py
+SPMUtil/gui/tilt_calculator.py
 SPMUtil/structures/__init__.py
 SPMUtil/structures/_structures.py
+SPMUtil/structures/point.py
 SPMUtil/structures/rect_2d.py
 SPMUtil/structures/scan_data_format.py
