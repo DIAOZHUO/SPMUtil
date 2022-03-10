@@ -11,6 +11,7 @@ class cache_1d_scope(Enum):
     Output_BW_CurrentLine = 4
     Custom_1DSlot1 = 5
     Custom_1DSlot2 = 6
+    LineProfile = 7
 
 
 class cache_2d_scope(Enum):
@@ -112,6 +113,9 @@ class PythonScanParam(JsonStringClass):
         self.Aux2Type = 2
         self.LinesNumPerFlag = 1
         self.ZFeedbackOn = True
+        self.XOffset = 0.0
+        self.YOffset = 0.0
+        self.ZOffset = 0.0
 
 
     @property

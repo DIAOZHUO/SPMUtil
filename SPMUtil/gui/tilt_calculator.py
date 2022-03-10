@@ -80,11 +80,11 @@ class TiltCalculator:
         self.root.mainloop()
 
         v = self.scale_var.get()
-        if rot_idx // 4 == 0:
+        if rot_idx % 4 == 0:
             return v / (param.Aux1MaxVoltage - param.Aux1MinVoltage), 0
-        elif rot_idx // 4 == 1:
+        elif rot_idx % 4 == 1:
             return 0, v / (param.Aux2MaxVoltage - param.Aux2MinVoltage)
-        elif rot_idx // 4 == 2:
+        elif rot_idx % 4 == 2:
             return v / (param.Aux1MinVoltage - param.Aux1MaxVoltage), 0
         else:
             return 0, v / (param.Aux2MinVoltage - param.Aux2MaxVoltage)
