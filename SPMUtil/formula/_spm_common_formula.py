@@ -45,6 +45,11 @@ def topo_map_correction(topo_map: np.ndarray, threshold=3):
 
 
 
+def normalize01_2dmap(array):
+    min, max = np.min(array), np.max(array)
+    return (array - min) / (max - min)
+
+
 
 def calc_ncc_dim3(template, image):
     if SPMUtil.use_cython:

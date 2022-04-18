@@ -14,7 +14,7 @@ import SPMUtil.analyzer as analyzer
 from SPMUtil.flatten import *
 from SPMUtil.filters import filter_1d, filter_2d
 
-from SPMUtil.gui import Rect2DSelector, NanonisGridVisualizer, TiltCalculator, LineSelector
+from SPMUtil.gui import Rect2DSelector, NanonisGridVisualizer, TiltCalculator, LineSelector, JsonEditor
 
 
 use_cython = False

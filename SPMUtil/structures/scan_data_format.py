@@ -109,13 +109,21 @@ class PythonScanParam(JsonStringClass):
         self.Xtilt = 0.0
         self.Ytilt = 0.0
         self.Applytilt = False
-        self.Aux1Type = 1
-        self.Aux2Type = 2
-        self.LinesNumPerFlag = 1
-        self.ZFeedbackOn = True
+        """
+        class AuxType(Enum):
+            X = 1
+            Y = 2
+            Z = 3
+            Current = 4
+        """
+        self.Aux1Type = "X"
+        self.Aux2Type = "Y"
         self.XOffset = 0.0
         self.YOffset = 0.0
         self.ZOffset = 0.0
+        self.LinesNumPerFlag = 1
+        self.ZFeedbackOn = True
+        self.AQBoost = False
 
 
     @property

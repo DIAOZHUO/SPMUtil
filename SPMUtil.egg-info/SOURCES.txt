@@ -34,6 +34,7 @@ SPMUtil/formula/__init__.py
 SPMUtil/formula/_math_formula.py
 SPMUtil/formula/_physic_formula.py
 SPMUtil/formula/_spm_common_formula.py
+SPMUtil/gui/JsonEditor.py
 SPMUtil/gui/NanonisGridVisualizer.py
 SPMUtil/gui/__init__.py
 SPMUtil/gui/line_selector.py
