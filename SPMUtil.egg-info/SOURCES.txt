@@ -5,7 +5,6 @@ setup.py
 SPMUtil/DataSerializer.py
 SPMUtil/DataSerializerPackage.py
 SPMUtil/__init__.py
-SPMUtil/_image_process.py
 SPMUtil/converter.py
 SPMUtil/flatten.py
 SPMUtil.egg-info/PKG-INFO
@@ -38,6 +37,7 @@ SPMUtil/gui/JsonEditor.py
 SPMUtil/gui/NanonisGridVisualizer.py
 SPMUtil/gui/__init__.py
 SPMUtil/gui/line_selector.py
+SPMUtil/gui/point_selector.py
 SPMUtil/gui/rect_2d_selector.py
 SPMUtil/gui/tilt_calculator.py
 SPMUtil/structures/__init__.py

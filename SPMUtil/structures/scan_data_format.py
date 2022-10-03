@@ -152,6 +152,7 @@ class ScanDataHeader(JsonStringClass):
         self.Time_Start_Scan = ""
         self.Time_End_Scan = ""
         self.Scan_Method = ""
+        self.Array_Builder = ""
 
     @property
     def Start_Scan_Sec(self) -> int:

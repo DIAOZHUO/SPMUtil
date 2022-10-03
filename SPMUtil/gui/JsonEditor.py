@@ -2,15 +2,16 @@ import json
 import uuid
 import tkinter as tk
 import tkinter.ttk as ttk
+import asyncio
 
-
-class JsonEditor(object):
+class JsonEditor(tk.Tk):
 
     def __init__(self, show_private_member=True):
-        self.root = tk.Tk()
-        self.root.title("JSON editor")
-        self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(0, weight=1)
+        super().__init__()
+        self.title("JSON editor")
+        self.protocol("WM_DELETE_WINDOW", self.close)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
 
         self.show_private_member = show_private_member
 
@@ -20,50 +21,26 @@ class JsonEditor(object):
         self.edit_dict = {}
 
         self.result_dict = {}
+        self._callback = None
+        self._run = False
+
+    def EditDictAsync(self, m_dict: dict, IntOptions: dict=None, callback=None):
+        self._build_edit_gui(m_dict, IntOptions, callback)
+        self._run = True
+        loop = asyncio.get_event_loop()
+        # loop.create_task(self._updater(0.1))
+        loop.run_until_complete(self._updater())
 
 
-    # opt_name: (from_, to, increment)
-    # IntOptions = {
-    #     'age': (1.0, 200.0, 1.0),
-    # }
     def EditDict(self, m_dict: dict, IntOptions: dict=None, callback=None):
-        self.raw_dict = m_dict.copy()
-        self.edit_dict = m_dict
-        self.uuid_value_name_dict.clear()
-
-        if IntOptions is not None:
-            self._int_options = IntOptions
-
-        # Setup the Frames
-        TreeFrame = ttk.Frame(self.root, padding="3")
-        TreeFrame.grid(row=0, column=0, sticky=tk.NSEW)
-
-        # Setup the Tree
-        tree = ttk.Treeview(TreeFrame, columns=('Values'))
-        tree.column('Values', width=100, anchor='center')
-        tree.heading('Values', text='Values')
-        tree.bind('<Double-1>', self._edit_cell)
-        tree.bind('<Return>', self._edit_cell)
-        self._JSONTree(tree, '', m_dict, self.show_private_member)
-        tree.pack(fill=tk.BOTH, expand=1)
-
-        CancelButton = ttk.Button(self.root, text="Cancel", command=self.on_cancel_click)
-        CancelButton.grid(row=1, column=0)
-        OKButton = ttk.Button(self.root, text="Apply", command=self.on_apply_click)
-        OKButton.grid(row=2, column=0)
-        # Limit windows minimum dimensions
-        self.root.update_idletasks()
-        self.root.minsize(self.root.winfo_reqwidth(), self.root.winfo_reqheight())
-        self.root.mainloop()
-        if callback is not None:
-            callback(self.result_dict)
-
-    @staticmethod
-    def _task_EditDictProcess(s, d):
-        s.EditDict(d)
+        self._build_edit_gui(m_dict, IntOptions, callback)
+        self.mainloop()
 
 
-
+    async def _updater(self):
+        while self._run:
+            self.update()
+            await asyncio.sleep(0.1)
 
     def _close_ed(self, parent, edwin):
         parent.focus_set()
@@ -140,19 +117,64 @@ class JsonEditor(object):
                     value = value.replace(' ', '_')
                 Tree.insert(Parent, 'end', uid, text=key, value=value)
 
+    # opt_name: (from_, to, increment)
+    # IntOptions = {
+    #     'age': (1.0, 200.0, 1.0),
+    # }
+    def _build_edit_gui(self, m_dict: dict, IntOptions: dict = None, callback=None):
+        self.raw_dict = m_dict.copy()
+        self.edit_dict = m_dict
+        self.uuid_value_name_dict.clear()
+        self._callback = callback
+
+        if IntOptions is not None:
+            self._int_options = IntOptions
+
+        # Setup the Frames
+        TreeFrame = ttk.Frame(self, padding="3")
+        TreeFrame.grid(row=0, column=0, sticky=tk.NSEW)
+
+        # Setup the Tree
+        tree = ttk.Treeview(TreeFrame, columns=('Values'))
+        tree.column('Values', width=100, anchor='center')
+        tree.heading('Values', text='Values')
+        tree.bind('<Double-1>', self._edit_cell)
+        tree.bind('<Return>', self._edit_cell)
+        self._JSONTree(tree, '', m_dict, self.show_private_member)
+        tree.pack(fill=tk.BOTH, expand=1)
+
+        CancelButton = ttk.Button(self, text="Cancel", command=self.on_cancel_click)
+        CancelButton.grid(row=1, column=0)
+        OKButton = ttk.Button(self, text="Apply", command=self.on_apply_click)
+        OKButton.grid(row=2, column=0)
+        # Limit windows minimum dimensions
+        self.update_idletasks()
+        self.minsize(self.winfo_reqwidth(), self.winfo_reqheight())
+
 
     def on_cancel_click(self):
-        self.root.destroy()
-        # print(self.raw_dict)
         self.result_dict = self.raw_dict
+        self._run = False
+        self.destroy()
 
     def on_apply_click(self):
-        self.root.destroy()
-        # print(self.edit_dict)
         self.result_dict = self.edit_dict
+        self._run = False
+        if self._callback is not None:
+            self._callback(self.result_dict)
+        self.destroy()
+
+    def close(self):
+        self._run = False
+        self.destroy()
+
 
 
 if __name__ == "__main__" :
+
+    def cb(a):
+        print(333)
+
     IntOptions = {
         'age': (1.0, 200.0, 1.0),
     }
@@ -179,5 +201,8 @@ if __name__ == "__main__" :
         ]}
 
     editor = JsonEditor()
-    editor.EditDict(Data, IntOptions)
-
+    print(111)
+    editor.EditDictAsync(Data, IntOptions, callback=cb)
+    print(222)
+    loop = asyncio.get_event_loop()
+    loop.run_forever()

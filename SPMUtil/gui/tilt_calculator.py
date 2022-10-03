@@ -1,24 +1,25 @@
 import SPMUtil as spmu
 import tkinter as tk
+import asyncio
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
-class TiltCalculator:
+class TiltCalculator(tk.Tk):
     def __init__(self):
-        self.root = tk.Tk()
-
-        self.root.title("Tilt Calculator")
-        frame1 = tk.Frame(self.root)
+        super().__init__()
+        self.title("Tilt Calculator")
+        self.protocol("WM_DELETE_WINDOW", self.close)
+        frame1 = tk.Frame(self)
         frame1.pack()
 
         fig = plt.Figure()
-        self.ax = fig.add_subplot(1, 1, 1)
-        self.fig_canvas = FigureCanvasTkAgg(fig, frame1)
-        self.fig_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        self._ax = fig.add_subplot(1, 1, 1)
+        self._fig_canvas = FigureCanvasTkAgg(fig, frame1)
+        self._fig_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-        frame2 = tk.Frame(self.root)
+        frame2 = tk.Frame(self)
         frame2.pack()
         self.min_limit = tk.DoubleVar()
         self.max_limit = tk.DoubleVar()
@@ -43,6 +44,10 @@ class TiltCalculator:
 
         self.line, self.line_x = np.ndarray(0), np.ndarray(0)
         self._output_ready = False
+        self._callback = None
+        self._tilt_result = (0,0)
+        self._rot_idx = 0
+        self.param = spmu.PythonScanParam()
 
     def _on_limit_value_change(self, *arg):
         try:
@@ -52,7 +57,22 @@ class TiltCalculator:
             pass
 
     def _on_apply_button_click(self):
-        self.root.destroy()
+        v = self.scale_var.get()
+        if self._rot_idx % 4 == 0:
+            self._tilt_result = v / (self.param.Aux1MaxVoltage - self.param.Aux1MinVoltage), 0
+        elif self._rot_idx % 4 == 1:
+            self._tilt_result = 0, v / (self.param.Aux2MaxVoltage - self.param.Aux2MinVoltage)
+        elif self._rot_idx % 4 == 2:
+            self._tilt_result = v / (self.param.Aux1MinVoltage - self.param.Aux1MaxVoltage), 0
+        else:
+            self._tilt_result = 0, v / (self.param.Aux2MinVoltage - self.param.Aux2MaxVoltage)
+
+        if not self._callback is None:
+            self._callback(self._tilt_result)
+            self._callback = None
+
+        self._run = False
+        self.destroy()
 
     def _on_auto_button_click(self):
         coef = np.polyfit(self.line_x, self.line, 1)
@@ -60,11 +80,13 @@ class TiltCalculator:
         self._slider_scroll(None)
 
     def _slider_scroll(self, event=None):
-        self.ax.clear()
-        self.ax.plot(self.line-self.line_x*self.scale_var.get())
-        self.fig_canvas.draw()
+        self._ax.clear()
+        self._ax.plot(self.line - self.line_x * self.scale_var.get())
+        self._fig_canvas.draw()
 
-    def calc_tilt(self, line, param: spmu.PythonScanParam):
+    def calc_tilt(self, line, param: spmu.PythonScanParam, callback=None):
+        self._callback = callback
+
         rot_idx = param.ZRotation // 90
         if param.Aux1Type == "X" and param.Aux2Type == "Y":
             pass
@@ -73,22 +95,52 @@ class TiltCalculator:
         else:
             raise ValueError("Unsupported Python Param Setting")
 
+        self._rot_idx = rot_idx
         self.line = line
+        self.param = param
         self.line_x = np.linspace(0, 1, len(self.line))
-        self.ax.plot(line)
-        self.ax.get_xaxis().set_visible(False)
-        self.root.mainloop()
+        self._ax.plot(line)
+        self._ax.get_xaxis().set_visible(False)
 
-        v = self.scale_var.get()
-        if rot_idx % 4 == 0:
-            return v / (param.Aux1MaxVoltage - param.Aux1MinVoltage), 0
-        elif rot_idx % 4 == 1:
-            return 0, v / (param.Aux2MaxVoltage - param.Aux2MinVoltage)
-        elif rot_idx % 4 == 2:
-            return v / (param.Aux1MinVoltage - param.Aux1MaxVoltage), 0
+        line_value_range = np.max(line) - np.min(line)
+        self.min_limit.set(-line_value_range / 2.0)
+        self.max_limit.set(line_value_range / 2.0)
+
+        self.mainloop()
+        return self._tilt_result
+
+    def calc_tilt_async(self, line, param: spmu.PythonScanParam, callback=None):
+        self._callback = callback
+
+        rot_idx = param.ZRotation // 90
+        if param.Aux1Type == "X" and param.Aux2Type == "Y":
+            pass
+        elif param.Aux1Type == "Y" and param.Aux2Type == "X":
+            rot_idx += 1
         else:
-            return 0, v / (param.Aux2MinVoltage - param.Aux2MaxVoltage)
+            raise ValueError("Unsupported Python Param Setting")
 
+        self._rot_idx = rot_idx
+        self.line = line
+        self.param = param
+        self.line_x = np.linspace(0, 1, len(self.line))
+        self._ax.plot(line)
+        self._ax.get_xaxis().set_visible(False)
+
+        self._run = True
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self._updater())
+
+
+
+    async def _updater(self):
+        while self._run:
+            self.update()
+            await asyncio.sleep(0.1)
+
+    def close(self):
+        self._run = False
+        self.destroy()
 
 
 if __name__ == '__main__':
@@ -99,7 +151,3 @@ if __name__ == '__main__':
     tc = TiltCalculator()
     result = tc.calc_tilt(data.data_dict[spmu.cache_2d_scope.FWFW_ZMap.name][:, 100], param)
     print(result)
-
-
-
-

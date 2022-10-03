@@ -8,6 +8,7 @@ class FlattenMode(Enum):
     LinearFit = 2
     PolyFit = 3
     Off = 4
+    LineAverage = 5
 
 
 
@@ -18,8 +19,8 @@ def get_flatten_param(map2d: np.ndarray, flatten=FlattenMode.LinearFit, poly_fit
     array_y = np.linspace(0, size[1], size[1])
 
 
-    if flatten == FlattenMode.Average:
-        raise ValueError("please use fitting_map function for FlattenMode.Average")
+    if flatten == FlattenMode.Average or flatten == FlattenMode.LineAverage:
+        raise ValueError("please use fitting_map function for Average flatten")
     if flatten == FlattenMode.LinearFit:
         coef_x, coef_y = 0, 0
         for i in range(0, size[1]):
@@ -62,6 +63,11 @@ def flatten_map(map2d: np.ndarray, flatten=FlattenMode.Average, poly_fit_order=2
         col_ave = np.nanmean(map2d, axis=0)
         row_ave = np.nanmean(map2d, axis=1)
         map2d -= np.tile(col_ave, (size[0], 1)) + np.tile(np.array([row_ave]).transpose(), (1, size[1]))
+
+    elif flatten == FlattenMode.LineAverage:
+        map2d -= np.nanmean(map2d)
+        row_ave = np.nanmean(map2d, axis=1)
+        map2d -= np.tile(np.array([row_ave]).transpose(), (1, size[1]))
 
     elif flatten == FlattenMode.LinearFit or flatten == FlattenMode.PolyFit:
         coef1, coef2 = get_flatten_param(map2d, flatten=flatten, poly_fit_order=poly_fit_order)

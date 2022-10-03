@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backend_bases import MouseButton
 from matplotlib.patches import Rectangle
 from SPMUtil.structures.rect_2d import Rect2D
-
+import SPMUtil
 
 class LineSelector(object):
     def __init__(self, ax=None):
@@ -42,8 +42,12 @@ class LineSelector(object):
                 self.line.set_data(self.x, self.y)
                 self.ax.figure.canvas.draw()
 
-    # from - to
+    # from(point) - to(point)
     def select_line(self, map: np.ndarray):
+        region = self.select_line_region(map)
+        return SPMUtil.formula.line_proline(map, *region)
+
+    def select_line_region(self, map: np.ndarray):
         plt.title("please select a line and close this window.")
         plt.imshow(map)
         plt.show()

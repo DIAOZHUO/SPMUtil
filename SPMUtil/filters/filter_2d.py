@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.fftpack import dct, idct
-from scipy.ndimage import gaussian_filter
+from scipy.ndimage.filters import gaussian_filter
 import SPMUtil
 
 

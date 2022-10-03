@@ -7,6 +7,14 @@ class Rect2D:
     def __str__(self):
         return "left_bottom:" + str(self.points) + ", window_size: (" + str(self.xbox) + ", " + str(self.ybox) + ")"
 
+    @property
+    def ToBoxList(self):
+        return [*self.points, self.points[0] + self.xbox, self.points[1] + self.ybox]
+
+    @property
+    def ToRectList(self):
+        return [*self.points, self.xbox, self.ybox]
+
     def __init__(self, points=(0,0), xbox=1, ybox=1, round_random=False):
         # if points[0] < 0:
         #     points[0] = 0
