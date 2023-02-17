@@ -1,4 +1,3 @@
-import SPMUtil._image_process as ip
 import SPMUtil.structures._structures as structures
 
 import SPMUtil.converter as converter

@@ -4,7 +4,6 @@ from matplotlib.patches import Rectangle
 from matplotlib.widgets import RectangleSelector
 from SPMUtil.structures.rect_2d import Rect2D
 
-
 class Rect2DSelector(object):
     def __init__(self, ax=None):
         self.ax = ax or plt.gca()
@@ -47,6 +46,7 @@ class Rect2DSelector(object):
         return Rect2D(self.blc, self.trc[0]-self.blc[0], self.trc[1]-self.blc[1])
 
 
-# map = np.random.random(size=(100, 100))
-# region = RectSelect()
-# print(region.select_rect(map))
+if __name__ == '__main__':
+    map = np.random.random(size=(100, 100))
+    region = Rect2DSelector()
+    print(region.select_rect(map))

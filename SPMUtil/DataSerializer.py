@@ -1,5 +1,10 @@
 import json
 import os
+import sys
+if sys.version_info > (3, 8, 3):
+    import pickle
+else:
+    import pickle5 as pickle
 import pickle
 
 import numpy as np
