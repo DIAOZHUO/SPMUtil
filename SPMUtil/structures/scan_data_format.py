@@ -1,7 +1,10 @@
 from SPMUtil import NdarrayEncoder, NdarrayDecoder, DataSerializer
 import json
-from enum import Enum
+from enum import Enum, auto
 from datetime import datetime as dt
+from copy import deepcopy
+from typing import TypeVar
+Cls = TypeVar('Cls')
 
 
 class cache_1d_scope(Enum):
@@ -12,6 +15,10 @@ class cache_1d_scope(Enum):
     Custom_1DSlot1 = 5
     Custom_1DSlot2 = 6
     LineProfile = 7
+    Output_FW_DfLine = 8
+    Output_BW_DfLine = 9
+    Output_FW_AmpLine = 10
+    Output_BW_AmpLine = 11
 
 
 class cache_2d_scope(Enum):
@@ -30,6 +37,25 @@ class cache_2d_scope(Enum):
     FF_ReadFlagArray = 13
     Custom_2DSlot1 = 14
     Custom_2DSlot2 = 15
+    FWFW_DfMap = 16
+    FWBW_DfMap = 17
+    BWFW_DfMap = 18
+    BWBW_DfMap = 19
+    FWFW_AmpMap = 20
+    FWBW_AmpMap = 21
+    BWFW_AmpMap = 22
+    BWBW_AmpMap = 23
+
+
+
+
+class signal_type(Enum):
+    Z = auto()
+    Current = auto()
+    Df = auto()
+    Amp = auto()
+    Phase = auto()
+    Excitation = auto()
 
 
 class JsonStringClass(object):
@@ -56,6 +82,18 @@ class JsonStringClass(object):
     @staticmethod
     def from_dataSerilizer(dataSerilizer: DataSerializer):
         raise NotImplementedError
+
+    @staticmethod
+    def copy_class(cls: Cls) -> Cls:
+        copy_cls = type(f'{cls.__name__}Copy', cls.__bases__, dict(cls.__dict__))
+        for name, attr in cls.__dict__.items():
+            try:
+                hash(attr)
+            except TypeError:
+                # Assume lack of __hash__ implies mutability. This is NOT
+                # a bullet proof assumption but good in many cases.
+                setattr(copy_cls, name, deepcopy(attr))
+        return copy_cls
 
 
 class StageConfigure(JsonStringClass):
@@ -145,6 +183,9 @@ class PythonScanParam(JsonStringClass):
         return data
 
 
+
+
+
 class ScanDataHeader(JsonStringClass):
     def __init__(self):
         super().__init__()
@@ -185,3 +226,34 @@ class ScanDataHeader(JsonStringClass):
     def _time_string_to_sec(self, time_str: str):
         ftr = [3600, 60, 1]
         return sum([a * b for a, b in zip(ftr, map(int, time_str.split(':')))])
+
+
+
+class HardwareConfigure(JsonStringClass):
+    def __init__(self):
+        super().__init__()
+        self.hardware_name = ""
+        # nm/V
+        self.Tube_Scanner_X_Piezo_Calibration = 1.0
+        self.Tube_Scanner_Y_Piezo_Calibration = 1.0
+        self.Tube_Scanner_Z_Piezo_Calibration = 1.0
+        self.HS_Scanner_X_Piezo_Calibration = 1.0
+        self.HS_Scanner_Y_Piezo_Calibration = 1.0
+        self.HS_Scanner_Z_Piezo_Calibration = 1.0
+        self.Tube_Scanner_Voltage_Range_Min = -10.0
+        self.Tube_Scanner_Voltage_Range_Max = 10.0
+        self.HS_Scanner_Voltage_Range_Min = -10.0
+        self.HS_Scanner_Voltage_Range_Max = 10.0
+        self.software_version = "v0.0.1"
+
+    @staticmethod
+    def GetKeyName() -> str:
+        return "HardwareConfigure"
+
+    @staticmethod
+    def from_dataSerilizer(dataSerilizer: DataSerializer):
+        data = HardwareConfigure()
+        data.from_json(dataSerilizer.data_dict[data.GetKeyName()])
+        return data
+
+

@@ -59,12 +59,17 @@ class Rect2D:
     def center(self):
         return (int(self.points[0] + self.xbox/2), int(self.points[1] + self.ybox/2))
 
+    def hitTestRect(self, pt):
+        px, py = pt
+        return self.points[0] <= px <= self.points[0] + self.xbox \
+            and self.points[1] + self.ybox >= py >= self.points[1]
+
     def extract_2d_map_from_rect(self, map: np.ndarray):
         x_point, y_point = self.points[0], self.points[1]
         return map[y_point:y_point+self.ybox, x_point:x_point+self.xbox]
 
-    def draw_rect_patch_on_matplot(self, ax, c="r"):
-        _rect = Rectangle(self.points, self.xbox, self.ybox, linewidth=1, edgecolor=c, facecolor="none")
+    def draw_rect_patch_on_matplot(self, ax, c="r", linewidth=1, linestyle="-"):
+        _rect = Rectangle(self.points, self.xbox, self.ybox, lw=linewidth, edgecolor=c, facecolor="none", ls=linestyle)
         ax.add_patch(_rect)
 
     @staticmethod
@@ -79,3 +84,4 @@ class Rect2D:
             points = fixed_center[0] - size[0]/2, fixed_center[1] - size[1]/2
 
         return Rect2D(points, size[0], size[1])
+

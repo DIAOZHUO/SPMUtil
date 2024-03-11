@@ -1,5 +1,4 @@
-import nanonispy as nap
-
+import SPMUtil.nanonispy as nap
 import SPMUtil as spmu
 import SPMUtil.formula as formula
 from SPMUtil.analyzer.BaseAnalyzer import *

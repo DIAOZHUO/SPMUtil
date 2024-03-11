@@ -1,12 +1,10 @@
 Metadata-Version: 2.1
 Name: SPMUtil
-Version: 0.3.12
+Version: 1.0.0
 Summary: Some Common method for SPM data analysis and realtime data processing.
-Home-page: UNKNOWN
 Author: ZHUO DIAO
 Author-email: enzian0515@gmail.com
 License: LGPL
-Platform: UNKNOWN
 Description-Content-Type: text/markdown
 License-File: LICENSE.txt
 
@@ -58,6 +56,4 @@ To enable cython script, type this at beginning.
 import SPMUtil as spmu
 spmu.use_cython = True
 ```
-
-
 

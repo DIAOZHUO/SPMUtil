@@ -1,9 +1,12 @@
 import SPMUtil.structures._structures as structures
-
+import SPMUtil.nanonispy as nanonispy
 import SPMUtil.converter as converter
 
 from SPMUtil.DataSerializer import DataSerializer, NdarrayDecoder, NdarrayEncoder
+from SPMUtil.DataInspector import DataInspector
 from SPMUtil.DataSerializerPackage import DataSerializerPackage
+
+
 from SPMUtil.structures.rect_2d import Rect2D
 from SPMUtil.structures.scan_data_format import cache_1d_scope, cache_2d_scope, ScanDataHeader, StageConfigure, PythonScanParam
 

@@ -103,8 +103,8 @@ class TiltCalculator(tk.Tk):
         self._ax.get_xaxis().set_visible(False)
 
         line_value_range = np.max(line) - np.min(line)
-        self.min_limit.set(-line_value_range / 2.0)
-        self.max_limit.set(line_value_range / 2.0)
+        self.min_limit.set(-line_value_range * 5)
+        self.max_limit.set(line_value_range * 5)
 
         self.mainloop()
         return self._tilt_result

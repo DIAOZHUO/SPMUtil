@@ -33,7 +33,7 @@ def rotate_scan_array(array_x, array_y, python_param: PythonScanParam):
 def line_proline(map, xy_point_from, xy_point_to):
     length = int(np.hypot(xy_point_to[0] - xy_point_from[0], xy_point_to[1] - xy_point_from[1]))
     x, y = np.linspace(xy_point_from[0], xy_point_to[0], length), np.linspace(xy_point_from[1], xy_point_to[1], length)
-    return map[x.astype(np.int), y.astype(np.int)]
+    return map[y.astype(np.int64), x.astype(np.int64)]
 
 
 def topo_map_correction(topo_map: np.ndarray, threshold=3):
@@ -45,7 +45,11 @@ def topo_map_correction(topo_map: np.ndarray, threshold=3):
     array = np.ma.masked_invalid(topo_map)
     xx, yy = np.meshgrid(x, y)
     x1, y1 = xx[~array.mask], yy[~array.mask]
-    return interpolate.griddata((x1, y1), array[~array.mask].ravel(), (xx, yy), method="cubic")
+
+    map = interpolate.griddata((x1, y1), array[~array.mask].ravel(), (xx, yy), method="cubic")
+    nans, x = np.isnan(map), lambda z: z.nonzero()[0]
+    map[nans] = np.interp(x(nans), x(~nans), map[~nans])
+    return map
 
 
 
