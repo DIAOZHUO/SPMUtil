@@ -1,10 +1,34 @@
+from __future__ import annotations
 from SPMUtil import NdarrayEncoder, NdarrayDecoder, DataSerializer
 import json
-from enum import Enum, auto
+from enum import Enum, auto, IntEnum
 from datetime import datetime as dt
 from copy import deepcopy
 from typing import TypeVar
+from functools import cache
+
 Cls = TypeVar('Cls')
+
+
+class SignalAIType(IntEnum):
+    none = 0
+    Z = 1
+    Current = 2
+    Df = 3
+    Amp = 4
+    Excitation = 5
+    CPD = 6
+
+
+class SignalAOType(IntEnum):
+    const = 0
+    Z = 1
+    Vs = 2
+    Tube_X = 3
+    Tube_Y = 4
+    HS_X = 5
+    HS_Y = 6
+
 
 
 class cache_1d_scope(Enum):
@@ -19,6 +43,30 @@ class cache_1d_scope(Enum):
     Output_BW_DfLine = 9
     Output_FW_AmpLine = 10
     Output_BW_AmpLine = 11
+    Output_FW_ExcitationLine = 12
+    Output_BW_ExcitationLine = 13
+    Output_FW_CPDLine = 14
+    Output_BW_CPDLine = 15
+
+    @staticmethod
+    @cache
+    def from_signal_type(signal_type: SignalAIType, aux1_fw_bw: bool) -> cache_1d_scope:
+        _signal_lookup_dict = {
+            (SignalAIType.Z, True): cache_1d_scope.Output_FW_ZLine,
+            (SignalAIType.Z, False): cache_1d_scope.Output_BW_ZLine,
+            (SignalAIType.Current, True): cache_1d_scope.Output_FW_CurrentLine,
+            (SignalAIType.Current, False): cache_1d_scope.Output_BW_CurrentLine,
+            (SignalAIType.Df, True): cache_1d_scope.Output_FW_DfLine,
+            (SignalAIType.Df, False): cache_1d_scope.Output_BW_DfLine,
+            (SignalAIType.Amp, True): cache_1d_scope.Output_FW_AmpLine,
+            (SignalAIType.Amp, False): cache_1d_scope.Output_BW_AmpLine,
+            (SignalAIType.Excitation, True): cache_1d_scope.Output_FW_ExcitationLine,
+            (SignalAIType.Excitation, False): cache_1d_scope.Output_FW_ExcitationLine,
+            (SignalAIType.CPD, True): cache_1d_scope.Output_FW_CPDLine,
+            (SignalAIType.CPD, False): cache_1d_scope.Output_BW_CPDLine,
+        }
+        return _signal_lookup_dict[(signal_type, aux1_fw_bw)]
+
 
 
 class cache_2d_scope(Enum):
@@ -45,17 +93,49 @@ class cache_2d_scope(Enum):
     FWBW_AmpMap = 21
     BWFW_AmpMap = 22
     BWBW_AmpMap = 23
+    FWFW_ExcitationMap = 24
+    FWBW_ExcitationMap = 25
+    BWFW_ExcitationMap = 26
+    BWBW_ExcitationMap = 27
+    FWFW_CPDMap = 28
+    FWBW_CPDMap = 29
+    BWFW_CPDMap = 30
+    BWBW_CPDMap = 31
+
+
+    @staticmethod
+    @cache
+    def from_signal_type(signal_type: SignalAIType, aux1_fw_bw: bool, aux2_fw_bw: bool) -> cache_2d_scope:
+        _signal_lookup_dict = {
+            (SignalAIType.Z, True, True): cache_2d_scope.FWFW_ZMap,
+            (SignalAIType.Z, False, True): cache_2d_scope.BWFW_ZMap,
+            (SignalAIType.Z, True, False): cache_2d_scope.FWBW_ZMap,
+            (SignalAIType.Z, False, False): cache_2d_scope.BWBW_ZMap,
+            (SignalAIType.Current, True, True): cache_2d_scope.FWFW_CurrentMap,
+            (SignalAIType.Current, False, True): cache_2d_scope.BWFW_CurrentMap,
+            (SignalAIType.Current, True, False): cache_2d_scope.FWBW_CurrentMap,
+            (SignalAIType.Current, False, False): cache_2d_scope.BWBW_CurrentMap,
+            (SignalAIType.Df, True, True): cache_2d_scope.FWFW_DfMap,
+            (SignalAIType.Df, False, True): cache_2d_scope.BWFW_DfMap,
+            (SignalAIType.Df, True, False): cache_2d_scope.FWBW_DfMap,
+            (SignalAIType.Df, False, False): cache_2d_scope.BWBW_DfMap,
+            (SignalAIType.Amp, True, True): cache_2d_scope.FWFW_AmpMap,
+            (SignalAIType.Amp, False, True): cache_2d_scope.BWFW_AmpMap,
+            (SignalAIType.Amp, True, False): cache_2d_scope.FWBW_AmpMap,
+            (SignalAIType.Amp, False, False): cache_2d_scope.BWBW_AmpMap,
+            (SignalAIType.Excitation, True, True): cache_2d_scope.FWFW_ExcitationMap,
+            (SignalAIType.Excitation, False, True): cache_2d_scope.BWFW_ExcitationMap,
+            (SignalAIType.Excitation, True, False): cache_2d_scope.FWBW_ExcitationMap,
+            (SignalAIType.Excitation, False, False): cache_2d_scope.BWBW_ExcitationMap,
+            (SignalAIType.CPD, True, True): cache_2d_scope.FWFW_CPDMap,
+            (SignalAIType.CPD, False, True): cache_2d_scope.BWFW_CPDMap,
+            (SignalAIType.CPD, True, False): cache_2d_scope.FWBW_CPDMap,
+            (SignalAIType.CPD, False, False): cache_2d_scope.BWBW_CPDMap,
+        }
+        return _signal_lookup_dict[(signal_type, aux1_fw_bw, aux2_fw_bw)]
 
 
 
-
-class signal_type(Enum):
-    Z = auto()
-    Current = auto()
-    Df = auto()
-    Amp = auto()
-    Phase = auto()
-    Excitation = auto()
 
 
 class JsonStringClass(object):
@@ -123,7 +203,7 @@ class StageConfigure(JsonStringClass):
         return "StageConfigure"
 
     @staticmethod
-    def from_dataSerilizer(dataSerilizer: DataSerializer):
+    def from_dataSerilizer(dataSerilizer: DataSerializer) -> StageConfigure:
         data = StageConfigure()
         if type(dataSerilizer.data_dict[data.GetKeyName()]) == str:
             data.from_json(dataSerilizer.data_dict[data.GetKeyName()])
@@ -177,7 +257,7 @@ class PythonScanParam(JsonStringClass):
         return "PythonScanParam"
 
     @staticmethod
-    def from_dataSerilizer(dataSerilizer: DataSerializer):
+    def from_dataSerilizer(dataSerilizer: DataSerializer) -> PythonScanParam:
         data = PythonScanParam()
         data.from_json(dataSerilizer.data_dict[data.GetKeyName()])
         return data
@@ -218,7 +298,7 @@ class ScanDataHeader(JsonStringClass):
         return "data_main_header"
 
     @staticmethod
-    def from_dataSerilizer(dataSerilizer: DataSerializer):
+    def from_dataSerilizer(dataSerilizer: DataSerializer) -> ScanDataHeader:
         data = ScanDataHeader()
         data.from_json(dataSerilizer.data_dict[data.GetKeyName()])
         return data
@@ -233,27 +313,63 @@ class HardwareConfigure(JsonStringClass):
     def __init__(self):
         super().__init__()
         self.hardware_name = ""
-        # nm/V
+        # piezo calibration (nm/V)
         self.Tube_Scanner_X_Piezo_Calibration = 1.0
         self.Tube_Scanner_Y_Piezo_Calibration = 1.0
         self.Tube_Scanner_Z_Piezo_Calibration = 1.0
         self.HS_Scanner_X_Piezo_Calibration = 1.0
         self.HS_Scanner_Y_Piezo_Calibration = 1.0
         self.HS_Scanner_Z_Piezo_Calibration = 1.0
+        # Voltage Range (V)
         self.Tube_Scanner_Voltage_Range_Min = -10.0
         self.Tube_Scanner_Voltage_Range_Max = 10.0
         self.HS_Scanner_Voltage_Range_Min = -10.0
         self.HS_Scanner_Voltage_Range_Max = 10.0
         self.software_version = "v0.0.1"
+        # input channel
+        self.SignalAIType_AI0 = SignalAIType.none
+        self.SignalAIType_AI1 = SignalAIType.none
+        self.SignalAIType_AI2 = SignalAIType.none
+        self.SignalAIType_AI3 = SignalAIType.none
+        self.SignalAIType_AI4 = SignalAIType.none
+        self.SignalAIType_AI5 = SignalAIType.none
+        self.SignalAIType_AI6 = SignalAIType.none
+        self.SignalAIType_AI7 = SignalAIType.none
+
+        # output channel
+        self.SignalAOType_AO0 = SignalAOType.const
+        self.const_AO0 = 0.0
+        self.SignalAOType_AO1 = SignalAOType.const
+        self.const_AO1 = 0.0
+        self.SignalAOType_AO2 = SignalAOType.const
+        self.const_AO2 = 0.0
+        self.SignalAOType_AO2 = SignalAOType.const
+        self.const_AO2 = 0.0
+        self.SignalAOType_AO3 = SignalAOType.const
+        self.const_AO3 = 0.0
+        self.SignalAOType_AO4 = SignalAOType.const
+        self.const_AO4 = 0.0
+        self.SignalAOType_AO5 = SignalAOType.const
+        self.const_AO5 = 0.0
+        self.SignalAOType_AO6 = SignalAOType.const
+        self.const_AO6 = 0.0
+        self.SignalAOType_AO7 = SignalAOType.const
+        self.const_AO7 = 0.0
+
+        self.Feedback_Signal = SignalAIType.Current
+
 
     @staticmethod
     def GetKeyName() -> str:
         return "HardwareConfigure"
 
     @staticmethod
-    def from_dataSerilizer(dataSerilizer: DataSerializer):
+    def from_dataSerilizer(dataSerilizer: DataSerializer) -> HardwareConfigure:
         data = HardwareConfigure()
         data.from_json(dataSerilizer.data_dict[data.GetKeyName()])
         return data
 
 
+if __name__ == '__main__':
+    print(cache_1d_scope.from_signal_type(SignalAIType.Z, False))
+    print(cache_2d_scope.from_signal_type(SignalAIType.Current, True, True))

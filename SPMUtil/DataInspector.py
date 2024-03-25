@@ -516,8 +516,7 @@ class DataInspector(object):
                     if len(strs) > 1:
                         self.setting_dict[strs[0].replace(" ", "").replace("\n", "")] = strs[1].replace(" ", "").replace("\n", "")
         else:
-            messagebox.showerror("error", "can not file setting files (DataInspectorSetting.ini)")
-
+            self.confirm_setting()
 
     def write_setting(self, key, value):
         if os.path.isfile("./DataInspectorSetting.ini"):
@@ -530,9 +529,18 @@ class DataInspector(object):
                     else:
                         f.write(line)
         else:
-            messagebox.showerror("error", "can not file setting files (DataInspectorSetting.ini)")
+            self.confirm_setting()
 
+    def confirm_setting(self):
+        res = messagebox.askquestion("Generate Setting File", "can not find setting files (DataInspectorSetting.ini) at %s, do you want to generate it?" % os.path.abspath("./DataInspectorSetting.ini"))
+        if res == 'yes':
+            with open("./DataInspectorSetting.ini", "w") as f:
+                f.write('[Gernal]\nInitalFolderPath=C:/\n2DMapKey=["Output_FW_ZMap", "Output_BW_ZMap"]\n[Calibration]\nTubeX = 21.85\nTubeY = 21.85\nTubeZ = 6.05\nHSX = 1\nHSY = 1\nHSZ = 1')
 
+            messagebox.showinfo("Generate Setting File", "created setting file at %s." % os.path.abspath("./DataInspectorSetting.ini"))
+            self.load_setting()
+        else:
+            pass
 
 
 if __name__ == "__main__":
