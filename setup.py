@@ -2,12 +2,12 @@ import setuptools
 
 from os import path
 this_directory = path.abspath(path.dirname(__file__))
-with open(path.join(this_directory, 'README.md'), encoding="utf-8") as f:
+with open(path.join(this_directory, 'README.MD'), encoding="utf-8") as f:
     description = f.read()
 
 setuptools.setup(
     name="SPMUtil",
-    version="1.0.5",
+    version="1.0.6",
     description="Some Common method for SPM data analysis and realtime data processing.",
     author="ZHUO DIAO",
     author_email="enzian0515@gmail.com",
